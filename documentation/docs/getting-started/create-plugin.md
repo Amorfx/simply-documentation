@@ -2,7 +2,9 @@
 sidebar_position: 3
 ---
 # Create your first plugin
-> A Simply plugin is only a WordPress plugin with some filters.
+:::note
+A plugin created with Simply is only a WordPress plugin with some filters.
+:::
 
 You have two possibilities to create a plugin with Simply : 
 - Register directly all the plugin to Simply and autoconfigure all files to services, hook, controller etc.
@@ -22,22 +24,34 @@ With Simply you only must have a config directory and a src directory if you wan
 - `src`: add your other files for your plugin
 - `your-plugin.php`: add some configuration code.
 
-## Register your plugin to Simply and autoconfigure it
-
-
-
 ## Plugin entrypoint configuration
 Simply look into some directories to load configuration file for the Symfony dependency injection.
 In `your-plugin.php` you have to add some filters to add your config directory into the lists of configuration files.
 
+But to automatize all the things (add class to service container, configure hooks) add only one line :
+
 ```php title='plugins/your-plugin/your-plugin.php'
 <?php
+/*
+Plugin Name: My custom plugin
+Description: Description of my plugin
+Author: John Doe
+Version: 1.0
+*/
 
-add_filter('simply_config_directories', function($arrayDirectories) {
-    $arrayDirectories[] = __DIR__ . '/config';
-    return $arrayDirectories;
-});
+Simply::registerPlugin(__DIR__, 'MyCustomPlugin');
+```
+It informs the framework :
+- that all classes into the namespace are services by default
+- autoconfigure hooks classes, controllers and other WordPress features that Simply can understand
+- add config directory to the list of directories for the service container
+
+> If you don't want to autoconfigure all classes you can use multitude of hooks [listed here](installation.md)
+
+## Create plugin with the CLI
+In your project directory
+```bash
+php bin/console simply:make:plugin
 ```
 
-## Create plugin with the Console
-Coming soon.
+Then respond to all the questions to finalize plugin creation.

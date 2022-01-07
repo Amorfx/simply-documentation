@@ -1,35 +1,37 @@
 ---
-sidebar_position: 10
+sidebar_position: 1
+title: Introduction
 ---
+# Simply Framework
 
-# Tutorial Intro
+> A tool allowing to structure, solidify your code in a WordPress environment.
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Simply is not a framework that will lose you if you have been developing for some time on WordPress.
 
-## Getting Started
+It will allow you to save development time by offering you dependency injection as well as the automation of recurring tasks on WordPress.
 
-Get started by **creating a new site**.
+## Philosophy
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+The framework follows several important points in order not to complicate the development:
+- do not modify the overall structure of WordPress
+- avoid adding a large overlay which would make plugin or theme development more complex
+- simplify added WordPress things with automated process (post type, taxonomy...)
+- use Object-oriented programming
 
-## Generate a new site
+This is why the framework was developed as a WordPress must use plugin
 
-Generate a new Docusaurus site using the **classic template**:
+## Development team
+The framework was created by [Clément Décou](https://www.clement-decou.fr), who continues to lead the development.
 
-```shell
-npm init docusaurus@latest my-website classic
-```
+## Contributing
+Any help is appreciated. The project is open-source and i encourage you to participate. You can contribute to the project in multiple ways by:
 
-## Start your site
+- Reporting a bug issue
+- Suggesting features
+- Sending a pull request
+- Add a star in [GitHub](https://github.com/Amorfx/simply-framework)
+- Following me on [Twitter](https://twitter.com/Amorfx3)
+- Sharing the project around you
 
-Run the development server:
-
-```shell
-cd my-website
-
-npx docusaurus start
-```
-
-Your site starts at `http://localhost:3000`.
-
-Open `docs/intro.md` and edit some lines: the site **reloads automatically** and displays your changes.
+## Next
+Read the [installation guide](getting-started/installation.md)

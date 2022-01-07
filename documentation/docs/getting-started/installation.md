@@ -9,13 +9,26 @@ The only tool you required is Composer.
 
 ## Install with the boilerplate (recommended)
 Only one command is required to install a complete WordPress.
-```
+```bash
 composer create-project clementdecou/simply your-project
 ```
 
 The boilerplate does not just allow you to install a WordPress and the framework but brings some additional features:
 - The use of .env files
 - Management of WordPress, plugins and theme via Composer
+- Add CLI to create some WordPress features (Hooks, plugins, themes...)
+
+### Tree of your main project folder
+```
+.
+├── your-project
+│   ├── vendor
+│   ├── wordpress
+│   ├── composer.json
+│   ├── composer.lock
+│   └── README.md
+└──
+```
 
 ## You have a WordPress environment already installed
 - [Download the latest release](https://github.com/Amorfx/simply-framework/releases) of the framework
@@ -41,18 +54,6 @@ Your mu-plugins folder should have a structure like this :
 
 - Go into the simply-framework directory and exec `composer install`
 - That's it :confetti_ball:
-
-## Tree of your main project folder
-```
-.
-├── your-project
-│   ├── vendor
-│   ├── wordpress
-│   ├── composer.json
-│   ├── composer.lock
-│   └── README.md
-└──
-```
 
 ## Next
 Now you need to [configure your WordPress](getting-started/config-wordpress.md).
