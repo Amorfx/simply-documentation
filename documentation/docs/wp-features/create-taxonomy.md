@@ -15,7 +15,7 @@ taxonomy:
         singular_name: Technologie
 ```
 :::note
-All the available parameters are the same of [`register_post_type`](https://developer.wordpress.org/reference/functions/register_post_type/) function.
+All the available parameters are the same of [`register_taxonomy`](https://developer.wordpress.org/reference/functions/register_taxonomy/) function.
 :::
 
 ## Using translation method in Yaml files
