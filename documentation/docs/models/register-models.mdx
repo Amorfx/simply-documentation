@@ -1,0 +1,53 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Register your model into Simply
+After creating all of your models you have to register the models into Simply.
+
+## Why ?
+To inject automatically the good model with `ModelFactory`. The `ModelFactory` allows you to return the correct model according to the injecting object.
+Like when you use hook you don't know which post type is the current object queried.
+```php
+<?php
+
+global $post;
+
+// $post->post_type is project
+$project = ModelFactory::create($post);
+// $project will be an instance of Project model after registered into Simply
+```
+
+## How ?
+With the good filter provides by Simply :
+<Tabs>
+<TabItem value="post-type" label="Post type">
+
+```php
+add_filter('simply_model_post_type_mapping', function(array $mapping) {
+    $mapping[] = Project::class;
+    return $mapping;
+});
+```
+
+</TabItem>
+<TabItem value="taxonomy" label="Taxonomy">
+
+```php
+// Add model for project tag
+add_filter('simply_model_term_mapping', function(array $mapping) {
+    $mapping[] = ProjectTag::class;
+    return $mapping;
+});
+```
+
+</TabItem>
+</Tabs>
+
+The `$mapping` array has basic object for post and category and tag. You can remove or replace it.
+:::caution
+The name of the hook will change in future version of Simply Framework because of nomenclature. It will be `simply/model/post_type`.
+:::
