@@ -107,7 +107,7 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ['php', 'yaml'],
+        additionalLanguages: ['php', 'yaml', 'twig'],
       },
     }),
 };
