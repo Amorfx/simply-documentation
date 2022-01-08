@@ -9,7 +9,7 @@ const config = {
   title: 'Simply Framework',
   tagline: 'Develop in WordPress become much better',
   url: 'https://your-docusaurus-test-site.com',
-  baseUrl: '/',
+  baseUrl: '/simply-documentation/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   organizationName: 'Amorfx', // Usually your GitHub org/user name.
