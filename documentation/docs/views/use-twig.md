@@ -4,6 +4,9 @@ title: Twig
 ---
 # Template Engine
 The second main feature of Simply is the use of the [Twig](https://twig.symfony.com/) template engine via the class `TemplateEngine`.
+:::note
+The template engine is a **lazy service** so you can inject it without asking any questions about performance.
+:::
 
 ## Documentation
 All the documentation for twig is [available here](https://twig.symfony.com/doc/3.x/). Read it carefully to understand how to use it in the framework.

@@ -36,7 +36,7 @@ NONCE_SALT='generateme'
 - `DB_PASSWORD`: set Database Password
 - `DB_HOST`: set Database Host 
 - `DB_PREFIX`: set the [table prefix](config-wordpress.md#table-prefix)
-- `DB_CHARSET`: set [the charset](config-wordpress.mddatabase-character-set)
+- `DB_CHARSET`: set [the charset](config-wordpress.md#database-character-set)
 
 ### Table prefix
 The $table_prefix is the value placed in the front of your database tables. Change the value if you want to use something other than wp_ for your database prefix. Typically this is changed if you are installing multiple WordPress blogs in the same database, as is done with the multisite feature.

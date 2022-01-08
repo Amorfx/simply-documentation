@@ -39,14 +39,14 @@ Author: John Doe
 Version: 1.0
 */
 
+// require your autoload here
+
 Simply::registerPlugin(__DIR__, 'MyCustomPlugin');
 ```
 It informs the framework :
 - that all classes into the namespace are services by default
 - autoconfigure hooks classes, controllers and other WordPress features that Simply can understand
 - add config directory to the list of directories for the service container
-
-> If you don't want to autoconfigure all classes you can use multitude of hooks [listed here](installation.md)
 
 ## Create plugin with the CLI
 In your project directory
