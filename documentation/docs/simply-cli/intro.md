@@ -23,6 +23,16 @@ php bin/console simply:make:plugin
 php bin/console simply:make:post-type
 ```
 
+## Create an empty plugin
+```bash
+php bin/console simply:make:plugin
+```
+
+## Create an empty theme
+```bash
+php bin/console simply:make:theme
+```
+
 ## Create a custom WP CLI command
 Create a custom class extends `AbstractWordPressCommand` for WP CLI command.
 ```bash
