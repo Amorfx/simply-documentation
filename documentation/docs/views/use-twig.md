@@ -28,25 +28,20 @@ And another example with parameters :
 </a>
 ```
 ## Add custom twig configuration
-You can add custom functions or globals with the `simply_template_configuration` filter :
+You can add custom functions or globals with the `simply/config/template` filter :
 ```php
-add_filter('simply_template_configuration', function (\Twig\Environment $twig) {
+add_filter('simply/config/template', function (\Twig\Environment $twig) {
     $twig->addFunction(new \Twig\TwigFunction('isLive', ThemeSettings::class . '::isLive'));
     $twig->addGlobal('theme', new ThemeUtils());
     return $twig;
 });
 ```
-:::caution
-The name of the hook will change in future version of Simply Framework because of nomenclature. It will be `simply/template/configuration`.
-:::
+
 ## Register custom views directories
-To tell Twig where search template files you have to use `simply_views_directory` filter :
+To tell Twig where search template files you have to use `simply/config/view_directories` filter :
 ```php
-add_filter('simply_views_directory', function(array $viewsDirectory) {
+add_filter('simply/config/view_directories', function(array $viewsDirectory) {
     $viewsDirectory[] = realpath(__DIR__ . '/views');
     return $viewsDirectory;
 });
 ```
-:::caution
-The name of the hook will change in future version of Simply Framework because of nomenclature. It will be `simply/template/directories`.
-:::

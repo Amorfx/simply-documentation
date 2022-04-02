@@ -27,7 +27,7 @@ With the good filter provides by Simply :
 <TabItem value="post-type" label="Post type">
 
 ```php
-add_filter('simply_model_post_type_mapping', function(array $mapping) {
+add_filter('simply/model/post_type_mapping', function(array $mapping) {
     $mapping[] = Project::class;
     return $mapping;
 });
@@ -38,7 +38,7 @@ add_filter('simply_model_post_type_mapping', function(array $mapping) {
 
 ```php
 // Add model for project tag
-add_filter('simply_model_term_mapping', function(array $mapping) {
+add_filter('simply/model/term_mapping', function(array $mapping) {
     $mapping[] = ProjectTag::class;
     return $mapping;
 });
@@ -48,6 +48,3 @@ add_filter('simply_model_term_mapping', function(array $mapping) {
 </Tabs>
 
 The `$mapping` array has basic object for post and category and tag. You can remove or replace it.
-:::caution
-The name of the hook will change in future version of Simply Framework because of nomenclature. It will be `simply/model/post_type`.
-:::
