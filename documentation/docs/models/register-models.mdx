@@ -22,6 +22,25 @@ $project = ModelFactory::create($post);
 ```
 
 ## How ?
+### By create a Simply framework extension
+After [creating your simply extension](advanced/extended-simply.md) add the interface `RegisterModelInterface` to your extension class.
+- Use the method `registerModel` to register your post type model and erase old configuration.
+- Use the method `addPostModel` to register your post type model.
+- Use the method `registerTermModel` to register your taxonomy model and erase old configuration.
+- Use the method `addTermModel` to register your taxonomy model.
+```php
+<?php
+class ThemePlugin implements PluginInterface, RegisterModelInterface {
+    public function build(ContainerBuilder $container): void {}
+
+    public function registerModel(ModelFactory $factory): void {
+        $factory->registerPostModel([MyPostTypeClass::class, Post::class]);
+        $factory->registerTermModel([MyTaxonomyClass::class]);
+    }
+}
+```
+
+### Deprecated method
 With the good filter provides by Simply :
 <Tabs>
 <TabItem value="post-type" label="Post type">
