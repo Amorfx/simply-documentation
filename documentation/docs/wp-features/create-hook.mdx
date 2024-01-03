@@ -8,37 +8,8 @@ import TabItem from '@theme/TabItem';
 
 # Add WordPress hook
 Developing with WordPress will certainly require you to add hooks in order to modify the basic behavior. With Simply it is possible to add hooks in different ways :
-- [Using a class implement an interface](#using-a-class-implement-an-interface)
-- The modern way (with php 8) [using PHP attribute](#using-php-attribute)
-
-## Using a class implement an interface
-By implementing HookableInterface you need to implement `register` function. In this function add all hooks you want to add.
-The service container automatically call this function after WordPress is setup.
-```php
-<?php
-
-namespace ClementCore\Hook;
-
-use Simply\Core\Contract\HookableInterface;
-
-class Excerpt implements HookableInterface {
-    public function register() {
-        add_action('excerpt_length', function($length) {
-            if (is_home()) {
-                return 20;
-            }
-           return $length;
-        });
-
-        add_action('excerpt_more', function($more) {
-            if (is_home()) {
-                return '...';
-            }
-            return $more;
-        });
-    }
-}
-```
+- The modern way [using PHP attribute](#using-php-attribute)
+- [Using a class implement an interface](#using-a-class-implement-an-interface) (deprecated)
 
 ## Using PHP attribute
 PHP 8 add internal attribute. Simply have two attributes to add filter or action.
@@ -81,6 +52,35 @@ class SimpleHook {
 </TabItem>
 </Tabs>
 
+## Using a class implement an interface (deprecated)
+By implementing HookableInterface you need to implement `register` function. In this function add all hooks you want to add.
+The service container automatically call this function after WordPress is setup.
+```php
+<?php
+
+namespace ClementCore\Hook;
+
+use Simply\Core\Contract\HookableInterface;
+
+class Excerpt implements HookableInterface {
+    public function register() {
+        add_action('excerpt_length', function($length) {
+            if (is_home()) {
+                return 20;
+            }
+           return $length;
+        });
+
+        add_action('excerpt_more', function($more) {
+            if (is_home()) {
+                return '...';
+            }
+            return $more;
+        });
+    }
+}
+```
+
 ## Automatically register hook class
 Simply can register hooks automatically : 
 - If you register your plugin with registerPlugin function the class has automatically register
@@ -113,8 +113,9 @@ use Symfony\Contracts\Service\ServiceSubscriberTrait;
 class OnLiveEndpoint implements HookableInterface, ServiceSubscriberInterface {
     use ServiceSubscriberTrait;
 
-    public function register() {
-        add_action( 'rest_api_init', [$this, 'registerEndpoint']);
+    #[Action('rest_api_init')]
+    public function registerEndpoint() {
+        // ...
     }
 
    // ...
