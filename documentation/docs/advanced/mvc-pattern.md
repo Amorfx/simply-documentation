@@ -16,7 +16,21 @@ composer require clementdecou/simply-mvc
 ### Manually
 - Unzip into your mu-plugins directory and rename the directory to "simply-mvc"
 
-## Load the extension
+## Load the extension with boilerplate
+To load the extension go to the extension.php file and add the following code `/simply-mvc/entrypoint.php` :
+```php title='/config/extensions.php'
+<?php
+/**
+ * This file return an array of Simply plugin to extend the framework.
+ * It is not a file to load WordPress plugins.
+ * See how install WordPress plugin with composer if you want to do that
+ */
+return [
+    '/simply-maker/entrypoint.php',
+    '/simply-mvc/entrypoint.php',
+];
+```
+## Load the extension without boilerplate (not recommended)
 To load the extension modify your muplugin load file :
 ```php title='wp-content/mu-plugins/load.php'{6}
 <?php
