@@ -22,13 +22,25 @@ The boilerplate does not just allow you to install a WordPress and the framework
 ```
 .
 ├── your-project
+│   ├── bin
+│   ├── config
+│   │   ├── application.php
+│   │   └── extension.php
 │   ├── vendor
-│   ├── wordpress
+│   ├── web
+│   │   ├── content
+│   │   └── ...
 │   ├── composer.json
 │   ├── composer.lock
+│   ├── wp-cli.yml
 │   └── README.md
 └──
 ```
+- `bin` contains the framework CLI
+- `config` contains the framework configuration with two files :
+    - `application.php` contains the main configuration of env files of the framework. Do not modify this file unless necessary.
+    - `extension.php` contains the list of loaded framework extensions. You can add or remove extensions here.
+- `web` contains the WordPress installation and themes and plugins installed via Composer in `content` directory.
 
 ## You have a WordPress environment already installed
 - [Download the latest release](https://github.com/Amorfx/simply-framework/releases) of the framework
@@ -43,7 +55,7 @@ The boilerplate does not just allow you to install a WordPress and the framework
 require __DIR__ . '/simply-framework/simply-framework.php';
 ```
 
-Your mu-plugins folder should have a structure like this : 
+Your mu-plugins folder should have a structure like this :
 ```
 .
 ├── mu-plugins
