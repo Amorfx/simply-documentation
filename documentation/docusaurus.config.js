@@ -84,6 +84,9 @@ const config = {
         additionalLanguages: ['php', 'yaml', 'twig'],
       },
     }),
+  plugins: [
+      [require.resolve("@cmfcmf/docusaurus-search-local"), {indexBlog: false}],
+  ]
 };
 
 module.exports = config;
