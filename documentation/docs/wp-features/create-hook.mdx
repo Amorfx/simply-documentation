@@ -6,26 +6,34 @@ title: Create a Hook
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Add WordPress hook
-Developing with WordPress will certainly require you to add hooks in order to modify the basic behavior. With Simply it is possible to add hooks in different ways :
-- The modern way [using PHP attribute](#using-php-attribute)
-- [Using a class implement an interface](#using-a-class-implement-an-interface-deprecated) (deprecated)
+# Add WordPress hooks
+Simply registers WordPress actions and filters in two ways:
+- [with PHP attributes](#with-php-attributes) on the methods of any service (recommended);
+- [with a class implementing `HookableInterface`](#with-hookableinterface), which adds its hooks itself.
 
-## Using PHP attribute
-PHP 8 add internal attribute. Simply have two attributes to add filter or action.
+:::caution Timing
+Hooks are registered on the `after_setup_theme` action, when the framework builds its container. Hooks that run earlier (`plugins_loaded`, `setup_theme`...) are not triggered: register them with `add_action()` in your plugin file.
+:::
+
+## With PHP attributes
+Add `#[Action]` or `#[Filter]` to a public method of a service (any class of the `src/` directory of a [registered plugin or theme](../getting-started/create-plugin.md)). No tag nor configuration is needed.
+
 <Tabs>
 <TabItem value="action" label="Action">
 
 ```php
 <?php
 
-namespace MyPlugin;
+namespace MyPlugin\Hook;
 
 use Simply\Core\Attributes\Action;
 
-class SimpleHook {
+class Setup
+{
     #[Action('init')]
-    public function myInit() {
+    public function registerBlocks(): void
+    {
+        // ...
     }
 }
 ```
@@ -36,15 +44,22 @@ class SimpleHook {
 ```php
 <?php
 
-namespace MyPlugin;
+namespace MyPlugin\Hook;
 
 use Simply\Core\Attributes\Filter;
 
-class SimpleHook {
-    #[Filter('the_content')]
-    public function myTheContentFilter($content) {
-        // Do your things
-        return $content;
+class Excerpt
+{
+    #[Filter('excerpt_length', 20)]
+    public function length(int $length): int
+    {
+        return 30;
+    }
+
+    #[Filter('the_title', 10, 2)]
+    public function title(string $title, int $postId): string
+    {
+        return $title;
     }
 }
 ```
@@ -52,80 +67,110 @@ class SimpleHook {
 </TabItem>
 </Tabs>
 
-## Using a class implement an interface (deprecated)
-By implementing HookableInterface you need to implement `register` function. In this function add all hooks you want to add.
-The service container automatically call this function after WordPress is setup.
-```php
-<?php
+Both attributes take `(string $hook, int $priority = 10, int $numberArguments = 1)`, and can be repeated on the same method.
 
-namespace ClementCore\Hook;
+- **The service is created when WordPress runs the hook**, not on every request: inject what you need in the constructor without worrying about performance.
+- The method must be **public**, and must not take a parameter **by reference**: otherwise the container build fails with an explicit message. For a hook that passes values by reference (`do_action_ref_array`), use [`HookableInterface`](#with-hookableinterface).
+- A service whose id is not its class name, and several services of the same class, all get their hooks.
 
-use Simply\Core\Contract\HookableInterface;
-
-class Excerpt implements HookableInterface {
-    public function register() {
-        add_action('excerpt_length', function($length) {
-            if (is_home()) {
-                return 20;
-            }
-           return $length;
-        });
-
-        add_action('excerpt_more', function($more) {
-            if (is_home()) {
-                return '...';
-            }
-            return $more;
-        });
-    }
-}
-```
-
-## Automatically register hook class
-Simply can register hooks automatically : 
-- If you register your plugin with registerPlugin function the class has automatically register
-- You can register your class as hook service by added service tags "wp.hook"
-
-```yaml
-services:
-  ClementCore\Admin\Admin:
-    tags: ['wp.hook']
-
-  ClementCore\Api\OnLiveEndpoint:
-    tags: ['wp.hook']
-```
-
-## Using dependency injection in Hook class
-:::caution
-A hook class is **instanciated** on **each request**.
-Be carefull and use [Service Subscribers & Locators](https://symfony.com/doc/current/service_container/service_subscribers_locators.html) if you want to use dependency injection with hook classes.
-:::
+### Use other services lazily
+Constructor injection creates the dependencies with the hook service. To create a dependency only when it is used, subscribe to it with `ServiceMethodsSubscriberTrait`:
 
 ```php
 <?php
 
-namespace ClementCore\Api;
+namespace MyPlugin\Hook;
 
-use Simply\Core\Contract\HookableInterface;
+use MyPlugin\Service\TokenGenerator;
+use Simply\Core\Attributes\Action;
+use Symfony\Contracts\Service\Attribute\SubscribedService;
+use Symfony\Contracts\Service\ServiceMethodsSubscriberTrait;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
-use Symfony\Contracts\Service\ServiceSubscriberTrait;
 
-class OnLiveEndpoint implements HookableInterface, ServiceSubscriberInterface {
-    use ServiceSubscriberTrait;
+class LiveEndpoint implements ServiceSubscriberInterface
+{
+    use ServiceMethodsSubscriberTrait;
 
     #[Action('rest_api_init')]
-    public function registerEndpoint() {
+    public function registerEndpoint(): void
+    {
+        $token = $this->tokenGenerator()->generate();
         // ...
     }
 
-   // ...
-
-    public function getTokenGenerator(): TokenGenerator {
-        return $this->container->get(TokenGenerator::class);
-    }
-
-    public static function getSubscribedServices(): array {
-        return [TokenGenerator::class => TokenGenerator::class];
+    #[SubscribedService]
+    private function tokenGenerator(): TokenGenerator
+    {
+        return $this->container->get(__METHOD__);
     }
 }
 ```
+(`ServiceSubscriberTrait`, deprecated by Symfony, is still supported.)
+
+### Debug the registered hooks
+```bash
+php bin/console simply:debug:hook --hook_name=the_title
+```
+lists the callbacks of a hook with their priority and source file. See [the CLI](../simply-cli/intro.md#debug-the-hooks).
+
+### Unhooking an attribute hook
+The WordPress callback of an attribute hook is a `Simply\Core\Hook\LazyHookListener`, not `[$service, 'method']`: `remove_action()` with `[$service, 'method']` does not find it. Find the listener instead, once the framework is ready:
+
+```php
+<?php
+
+use MyPlugin\Hook\Excerpt;
+use Simply\Core\Hook\LazyHookListener;
+
+add_action('simply/core/after_bootstrap', function (): void {
+    global $wp_filter;
+    foreach ($wp_filter['the_title']->callbacks[10] ?? [] as $callback) {
+        $listener = $callback['function'];
+        if ($listener instanceof LazyHookListener && $listener->class === Excerpt::class && $listener->method === 'title') {
+            remove_filter('the_title', $listener, 10);
+        }
+    }
+});
+```
+`LazyHookListener` exposes the `serviceId`, `class` and `method` of the hook.
+
+## With HookableInterface
+Implement `Simply\Core\Contract\HookableInterface`: its `register()` method is called on `after_setup_theme`, and adds the hooks. The class is tagged `wp.hook` automatically.
+
+```php
+<?php
+
+namespace MyPlugin\Hook;
+
+use Simply\Core\Contract\HookableInterface;
+
+class Excerpt implements HookableInterface
+{
+    public function register(): void
+    {
+        add_filter('excerpt_length', [$this, 'length']);
+        add_filter('excerpt_more', [$this, 'more']);
+    }
+
+    public function length(int $length): int
+    {
+        return 30;
+    }
+
+    public function more(string $more): string
+    {
+        return '…';
+    }
+}
+```
+Unlike attribute hooks, the class is created on every request. `simply:make:hook` generates this kind of class.
+
+:::caution
+Do not add the `wp.hook` tag to a class that only uses attributes: the framework would call a `register()` method that does not exist.
+:::
+
+## With the CLI
+```bash
+php bin/console simply:make:hook
+```
+creates a `HookableInterface` class in `src/Hook/` and its YAML file.
