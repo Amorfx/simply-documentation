@@ -2,43 +2,73 @@
 sidebar_position: 3
 ---
 # Repositories
+Repositories retrieve [models](create-model.md) from the database: you get `Project` objects instead of `WP_Post`, without writing `WP_Query` calls.
 
-You create your models. Great ! But how can you get it from database ? The repositories classes are the answer. With these classes when you retrieve your data from the database you directly retrieve models and not WP_Posts.
+## Repositories provided by Simply
+- `PostRepository`: posts of a post type;
+- `TermRepository` (abstract): terms of a taxonomy, extend it for your taxonomies;
+- `CategoryRepository` and `TagRepository`;
+- `UserRepository`.
 
-## Not using WP_Query
-The goal of these classes will be not to directly use the `WP_Query` class. Because WP_Query get only `WP_Post` object and if you want the model you must use ModelFactory or directly the constructor of your model.
-
-## Create your repository
-To create a Repository class you just have to implement the `RepositoryInterface` or extends `AbstractRepository`.
-The abstract class only add a `getReturnObject` function to transform WP_Post or other class to your Model.
-:::caution
-Extends **AbstractRepository** is only for Models with WordPress Object.
-:::
-
-Several classes exists for differents object type : 
-- `PostRepository` to retrieve WP_Post object,
-- `TermRepository` to retrieve WP_Term,
-- `CategoryRepository` to retrieve categories,
-- `TagRepository` to retrieve tags
-
-
-Let's take the example of our project model. Create our Repository is simple because we juste have to extend PostRepository.
-:::note
-`PostRepository` implement `find` (to get by id), `findAll` (posts_per_page = -1), `findBy` to get by criteria.
-:::
+## Create a repository
+Extend the repository of the WordPress object type, and reference it in the attribute of your model:
 
 ```php title='src/Repository/ProjectRepository.php'
 <?php
+
+namespace MyPlugin\Repository;
+
 use Simply\Core\Repository\PostRepository;
 
-class ProjectRepository extends PostRepository {
-    public function getClassName() {
-        return Project::class;
+class ProjectRepository extends PostRepository
+{
+    /**
+     * @return array<\MyPlugin\Model\Project>
+     */
+    public function findFeatured(int $limit = 3): array
+    {
+        return $this->findBy(['meta_key' => 'featured', 'meta_value' => '1'], ['date' => 'DESC'], $limit);
     }
 }
 ```
+The framework injects the type (`project`) and the model class from the `#[PostTypeModel]` attribute of the model: there is nothing else to configure.
+
 :::caution
-You have to implement `getClassName` to know wich model to retrieve. The repository use WP_Query and the model give the post type information.
+Never use a repository provided by Simply (`PostRepository::class`...) as the `repositoryClass` of your model: always create your own class.
 :::
 
-And that's it you can retrieve Project using ProjectRepository class and not have WP_Query in your code !
+## Methods
+| Method | Returns |
+|---|---|
+| `find(mixed $id)` | the model, or `null` when nothing is found or when the object has another type |
+| `findAll()` | every object of the type |
+| `findBy(array $criteria, array\|string\|null $orderBy = null, ?int $limit = null, ?int $offset = null)` | the matching models. `$criteria` takes the arguments of `WP_Query` (posts), `get_terms` (terms) or `get_users` (users). |
+| `findOneBy(array $criteria)` | the first matching model, or `null` |
+
+`$orderBy` accepts:
+- a field: `'title'`;
+- a field and a direction: `['title' => 'DESC']`;
+- the WordPress keys: `['orderby' => 'title', 'order' => 'ASC']`;
+- a meta value: `['meta_key' => 'price', 'orderby' => 'meta_value_num']`.
+
+## Use a repository
+Your repositories are private services: inject them.
+
+```php
+use MyPlugin\Repository\ProjectRepository;
+
+class ProjectList
+{
+    public function __construct(private ProjectRepository $projects)
+    {
+    }
+
+    public function render(): void
+    {
+        foreach ($this->projects->findFeatured() as $project) {
+            echo esc_html($project->getTitle());
+        }
+    }
+}
+```
+The repositories provided by Simply are public: `Simply::get(\Simply\Core\Repository\CategoryRepository::class)`.

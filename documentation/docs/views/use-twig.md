@@ -8,6 +8,31 @@ The second main feature of Simply is the use of the [Twig](https://twig.symfony.
 The template engine is a **lazy service** so you can inject it without asking any questions about performance.
 :::
 
+## Render a template
+Inject `Simply\Core\Template\TemplateEngine` (or get the public `framework.template_engine` service):
+
+```php
+use Simply\Core\Template\TemplateEngine;
+
+class ProjectCard
+{
+    public function __construct(private TemplateEngine $templates)
+    {
+    }
+
+    public function display(object $project): void
+    {
+        // Prints the template; pass false as third argument to get it as a string
+        $this->templates->render('project/card.html.twig', ['project' => $project]);
+    }
+}
+```
+`getEngine()` returns the Twig `Environment`.
+
+Templates are searched in the `views/` directory of the [registered theme](../getting-started/create-theme.md), and in the directories added with the `simply/config/view_directories` filter (see below).
+
+With `WP_DEBUG` false, compiled templates are cached in the [Simply cache](../getting-started/cache.md). With `WP_DEBUG` true, there is no cache and the Twig `dump()` function is available.
+
 ## Documentation
 All the documentation for twig is [available here](https://twig.symfony.com/doc/3.x/). Read it carefully to understand how to use it in the framework.
 

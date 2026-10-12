@@ -100,6 +100,7 @@ const config = {
         redirects: [
           {from: '/getting-started/config-wordpress', to: '/getting-started/configuration'},
           {from: '/getting-started/delete-cache', to: '/getting-started/cache'},
+          {from: '/models/register-models', to: '/models/create-model'},
         ],
       },
     ],
