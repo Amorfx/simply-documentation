@@ -8,7 +8,7 @@ Each models has a constructor with the object it decorates. `WP_Post` for `PostT
 
 ## For Post types
 ### Post
-Simply provides you with a basic model for type `post` : `PostTypeObject`. It provides some basic function like `getTitle`, `getPermalink` etc. But you can extends or replace this model with your model if you want. Read [how register your model](#register-your-model-into-simply) to know how to do this.
+Simply provides you with a basic model for type `post` : `PostTypeObject`. It provides some basic function like `getTitle`, `getPermalink` etc. But you can extends or replace this model with your model if you want. Read [how register your model](./register-models.mdx) to know how to do this.
 
 ### Custom Post types
 After [creating your custom post type](wp-features/create-post-type.md) you will have to create a corresponding model.
