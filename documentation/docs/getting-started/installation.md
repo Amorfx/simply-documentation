@@ -1,51 +1,61 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 # Installation
-Simply can be install like a WordPress plugin or via Composer. Even though simply is not really a plugin it can be installed as such.
-Or if you don't install WordPress at all you can install it with [the boilerplate](https://github.com/Amorfx/simply).
-
-The only tool you required is Composer.
+Check the [requirements](requirements.md) first.
 
 ## Install with the boilerplate (recommended)
-Only one command is required to install a complete WordPress.
 ```bash
-composer create-project clementdecou/simply your-project
+composer create-project clementdecou/simply my-project
 ```
 
-The boilerplate does not just allow you to install a WordPress and the framework but brings some additional features:
-- The use of .env files
-- Management of WordPress, plugins and theme via Composer
-- Add CLI to create some WordPress features (Hooks, plugins, themes...)
+The boilerplate installs WordPress, the framework and [simply-maker](../simply-cli/intro.md) with Composer, and brings:
+- the configuration of WordPress in a `.env` file (see [configuration](configuration.md));
+- WordPress, plugins and themes managed with Composer;
+- `bin/console`, to generate code (plugins, themes, hooks...) and clear the cache;
+- a [Docker development environment](docker.md).
 
-### Tree of your main project folder
-```
-.
-├── your-project
-│   ├── bin
-│   ├── config
-│   │   ├── application.php
-│   │   └── extension.php
-│   ├── vendor
-│   ├── web
-│   │   ├── content
-│   │   └── ...
-│   ├── composer.json
-│   ├── composer.lock
-│   ├── wp-cli.yml
-│   └── README.md
-└──
-```
-- `bin` contains the framework CLI
-- `config` contains the framework configuration with two files :
-    - `application.php` contains the main configuration of env files of the framework. Do not modify this file unless necessary.
-    - `extension.php` contains the list of loaded framework extensions. You can add or remove extensions here.
-- `web` contains the WordPress installation and themes and plugins installed via Composer in `content` directory.
+Then:
+1. edit `.env`: `WP_HOME`, the database settings, and the salts (generate them at https://roots.io/salts.html; the [Docker setup script](docker.md) does it for you);
+2. point your web server to the `web/` directory, or start the [Docker environment](docker.md);
+3. install WordPress from the browser or with WP-CLI (`wp core install`).
 
-## You have a WordPress environment already installed
-- [Download the latest release](https://github.com/Amorfx/simply-framework/releases) of the framework
-- Unzip into your mu-plugins directory and rename the directory to "simply-framework"
-- To load the framework create a PHP file at the root of mu-plugins directory
+### Project structure
+```
+my-project
+├── bin/console                       Simply commands
+├── config
+│   ├── application.php               WordPress configuration, read from .env
+│   └── extensions.php                Simply extensions to load
+├── docker/  compose.yaml             Docker development environment
+├── vendor/
+├── web                               document root
+│   ├── wp/                           WordPress core (installed by Composer, not versioned)
+│   ├── content
+│   │   ├── mu-plugins
+│   │   │   ├── load.php              loads the framework and the extensions
+│   │   │   ├── simply-framework/
+│   │   │   └── simply-maker/
+│   │   ├── plugins/
+│   │   ├── themes/
+│   │   └── uploads/
+│   ├── index.php
+│   └── wp-config.php
+├── .env  .env.example
+├── composer.json  composer.lock
+└── wp-cli.yml
+```
+- `config/application.php` turns the `.env` variables into WordPress constants. You should not need to modify it.
+- `config/extensions.php` lists the Simply extensions to load, as paths relative to `web/content/mu-plugins/` (for example `/simply-maker/entrypoint.php`).
+- `web/content/mu-plugins/load.php` loads the framework, then every extension listed in `config/extensions.php`.
+
+## Install in an existing WordPress
+Without the boilerplate, you get the framework only: no `.env` configuration, no `bin/console` nor code generators.
+
+- [Download the latest release](https://github.com/Amorfx/simply-framework/releases) of the framework.
+- Unzip it into your `mu-plugins` directory and rename the directory to `simply-framework`.
+- Run `composer install --no-dev` in the `simply-framework` directory: the framework loads its own `vendor/` when it exists.
+- Create a PHP file at the root of the `mu-plugins` directory to load it:
 
 ```php title='wp-content/mu-plugins/load.php'
 <?php
@@ -55,17 +65,13 @@ The boilerplate does not just allow you to install a WordPress and the framework
 require __DIR__ . '/simply-framework/simply-framework.php';
 ```
 
-Your mu-plugins folder should have a structure like this :
 ```
-.
-├── mu-plugins
-│   ├── simply-framework
-│   └── load.php
-└──
+mu-plugins
+├── simply-framework/
+└── load.php
 ```
 
-- Go into the simply-framework directory and exec `composer install`
-- That's it :confetti_ball:
+There is no project `composer.json` in this setup: give each plugin or theme its own Composer autoloader (a `composer.json` with an `autoload.psr-4` entry for `src/`, then `composer dump-autoload`), and require its `vendor/autoload.php` before calling `Simply::registerPlugin()`.
 
 ## Next
-Now you need to [configure your WordPress](getting-started/config-wordpress.md).
+[Configure WordPress](configuration.md), then [create your first plugin](create-plugin.md).

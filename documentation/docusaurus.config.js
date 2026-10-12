@@ -1,21 +1,30 @@
 // @ts-check
-// `@type` JSDoc annotations allow editor autocompletion and type checking
-// (when paired with `@ts-check`).
-// There are various equivalent ways to declare your Docusaurus config.
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {themes as prismThemes} from 'prism-react-renderer';
+
+const repositories = [
+  {label: 'simply-framework', href: 'https://github.com/Amorfx/simply-framework'},
+  {label: 'simply (boilerplate)', href: 'https://github.com/Amorfx/simply'},
+  {label: 'simply-maker', href: 'https://github.com/Amorfx/simply-maker'},
+  {label: 'simply-mvc', href: 'https://github.com/Amorfx/simply-mvc'},
+];
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Simply Framework',
   tagline: 'Develop in WordPress become much better',
-  url: 'https://your-docusaurus-test-site.com',
+  url: 'https://amorfx.github.io',
   baseUrl: '/simply-documentation/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-  organizationName: 'Amorfx', // Usually your GitHub org/user name.
-  projectName: 'simply-documentation', // Usually your repo name.
+  onBrokenAnchors: 'throw',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
+  organizationName: 'Amorfx',
+  projectName: 'simply-documentation',
 
   presets: [
     [
@@ -48,9 +57,10 @@ const config = {
             label: 'Documentation',
           },
           {
-            href: 'https://github.com/Amorfx/simply-framework',
+            type: 'dropdown',
             label: 'GitHub',
             position: 'right',
+            items: repositories,
           },
         ],
       },
@@ -67,13 +77,8 @@ const config = {
             ],
           },
           {
-            title: 'Community',
-            items: [
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/Amorfx3',
-              },
-            ],
+            title: 'Repositories',
+            items: repositories,
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Simply Framework`,
@@ -81,12 +86,25 @@ const config = {
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
-        additionalLanguages: ['php', 'yaml', 'twig'],
+        // markup-templating must come first: php and twig depend on it
+        additionalLanguages: ['markup-templating', 'php', 'yaml', 'bash'],
       },
     }),
+
   plugins: [
-      [require.resolve("@cmfcmf/docusaurus-search-local"), {indexBlog: false}],
-  ]
+    ['@cmfcmf/docusaurus-search-local', {indexBlog: false}],
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        // Pages that were removed or renamed, filled as the target pages are written
+        redirects: [
+          {from: '/getting-started/config-wordpress', to: '/getting-started/configuration'},
+          {from: '/getting-started/delete-cache', to: '/getting-started/cache'},
+          {from: '/models/register-models', to: '/models/create-model'},
+        ],
+      },
+    ],
+  ],
 };
 
-module.exports = config;
+export default config;

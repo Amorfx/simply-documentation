@@ -11,6 +11,8 @@ Simply is not a framework that will lose you if you have been developing for som
 
 It will allow you to save development time by offering you dependency injection as well as the automation of recurring tasks on WordPress.
 
+Simply 0.3 runs on PHP 8.2 to 8.4 with Symfony 7.4 and WordPress 6.1 or later: see the [requirements](getting-started/requirements.md).
+
 ## Philosophy
 
 The framework follows several important points in order not to complicate the development:

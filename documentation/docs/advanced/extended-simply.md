@@ -2,42 +2,60 @@
 sidebar_position: 2
 ---
 
-# Extended Simply Framework
-By adding your own extension to Simply you can add your own features to the framework.
-
-How it works ? Simply use the [Symfony Dependency Injection component](https://symfony.com/doc/current/components/dependency_injection.html) which is directly extensible.
-It means : 
-- You can add Container Extension
-- You can add custom Compiler Pass
-- You can add custom configuration to register services, parameters, tags etc.
+# Extend Simply
+Simply relies on the [Symfony DependencyInjection component](https://symfony.com/doc/current/components/dependency_injection.html), which is extensible. An extension can:
+- register a container extension, with its own configuration;
+- add compiler passes;
+- register services, parameters and tags.
 
 :::note
-To know more about the Symfony Dependency Injection component extension, you can read the [compiling section](https://symfony.com/doc/current/components/dependency_injection/compilation.html) of Symfony documentation.
+Read the [compiling section](https://symfony.com/doc/current/components/dependency_injection/compilation.html) of the Symfony documentation to know more.
 :::
-## Create your own extension
-A full example of extension is available with the [Simply MVC Extension](https://github.com/Amorfx/simply-mvc).
 
-### Create your extension class
-Create a class which implements `Simply\Core\Contract\PluginInterface` and add the method `build` to register your container extension, compiler pass, services etc.
+A complete example is [simply-mvc](https://github.com/Amorfx/simply-mvc).
+
+## Create your extension class
+Implement `Simply\Core\Contract\PluginInterface`, and register what you need in `build()`:
 
 ```php
-class MyPlugin implements PluginInterface {
-    public function build(ContainerBuilder $container): void {
-        $extension = new MyExtension();
+<?php
+
+namespace MyExtension;
+
+use Simply\Core\Contract\PluginInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+class MyExtensionPlugin implements PluginInterface
+{
+    public function build(ContainerBuilder $container): void
+    {
+        $extension = new MyContainerExtension();
         $container->registerExtension($extension);
         $container->loadFromExtension($extension->getAlias());
 
-        $container->addCompilerPass(...);
-        // ...
+        $container->addCompilerPass(new MyCompilerPass());
     }
 }
 ```
+With Symfony 7.4, a configuration class declares `getConfigTreeBuilder(): TreeBuilder`, and an extension `load(array $configs, ContainerBuilder $container): void`.
 
-### Register your extension
-To register your extension you have to call the method `Simply::registerSimplyPlugin` with your extension instance as parameter.
+## Register your extension
+Call `Simply::registerSimplyPlugin()` before the framework builds its container (on `after_setup_theme`):
 
 ```php title="entrypoint.php"
-Simply::registerSimplyPlugin(new MyPlugin());
-```
+<?php
 
-And that's it ! Your extension is now registered into Simply.
+Simply::registerSimplyPlugin(new MyExtension\MyExtensionPlugin());
+```
+With the boilerplate, add the entry point to `config/extensions.php`, as a path relative to `web/content/mu-plugins/`:
+```php title="config/extensions.php"
+<?php
+
+return [
+    '/simply-maker/entrypoint.php',
+    '/my-extension/entrypoint.php',
+];
+```
+Adding an extension changes the [cache fingerprint](../getting-started/cache.md): the container is rebuilt.
+
+To replace or complete the container extensions of the framework (post types, taxonomies, navigation menus), use the `simply/config/container_extensions` filter.

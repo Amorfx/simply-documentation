@@ -1,41 +1,13 @@
-# Website
+# Simply documentation
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+Documentation of the Simply framework, built with [Docusaurus 3](https://docusaurus.io/) and published on https://amorfx.github.io/simply-documentation/.
 
-### Installation
+Requirements: Node 20 or later and Yarn 1.
 
-```
-$ yarn
-```
-
-### Local Development
-
-```
-$ yarn start
+```bash
+yarn install
+yarn start   # local server with live reload
+yarn build   # static site in build/, fails on broken links
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
-
-```
-$ yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Pushing to `main` builds the site and publishes it on GitHub Pages (`.github/workflows/deploy.yml`). Pull requests are built but not published.

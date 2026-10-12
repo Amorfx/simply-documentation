@@ -12,4 +12,6 @@ But if you create a custom post types you don't have a custom model attached to 
 
 Simply will allow you to create a model for each post types (post and your custom post types).
 
-Simply models only decorate WP_Post, WP_Term but it allows to have a real model to lean on in your project.
+Simply models decorate `WP_Post`, `WP_Term` and `WP_User`: they add methods to the WordPress objects, and give you a real model to lean on in your project. [Repositories](repository.md) return these models instead of WordPress objects.
+
+Next: [create a model](create-model.md).
