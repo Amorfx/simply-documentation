@@ -27,6 +27,6 @@ taxonomy:
     args:
       label: trans(Technologies, mydomain)
 ```
-As for post types, the translation is cached in the language active when the container is compiled.
+As for post types, spaces are removed from the text, and the translation is cached in the language active when the container is compiled.
 
 To give the taxonomy a model, see [create a model](../models/create-model.md#model-of-a-taxonomy).

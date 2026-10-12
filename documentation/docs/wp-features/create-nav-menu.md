@@ -8,6 +8,10 @@ You can register menu locations with [`register_nav_menus`](https://developer.wo
 ```yaml title='config/nav-menu/menus.yaml'
 nav_menu:
   header: Header menu
-  footer: trans(Footer menu, mydomain)
+  footer: trans(Footer, mydomain)
 ```
 Each key is a menu location, each value its description. `trans(text, domain)` is replaced by [`__()`](https://developer.wordpress.org/reference/functions/__/).
+
+:::caution
+Spaces are removed from the values before `trans()` is read: `trans(Footer menu, mydomain)` becomes `__('Footermenu', 'mydomain')`. Use `trans()` only for texts without spaces, or register the menus in PHP.
+:::

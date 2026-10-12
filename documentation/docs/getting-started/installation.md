@@ -16,7 +16,7 @@ The boilerplate installs WordPress, the framework and [simply-maker](../simply-c
 - a [Docker development environment](docker.md).
 
 Then:
-1. edit `.env`: `WP_HOME` and the database settings at least;
+1. edit `.env`: `WP_HOME`, the database settings, and the salts (generate them at https://roots.io/salts.html; the [Docker setup script](docker.md) does it for you);
 2. point your web server to the `web/` directory, or start the [Docker environment](docker.md);
 3. install WordPress from the browser or with WP-CLI (`wp core install`).
 
@@ -54,7 +54,7 @@ Without the boilerplate, you get the framework only: no `.env` configuration, no
 
 - [Download the latest release](https://github.com/Amorfx/simply-framework/releases) of the framework.
 - Unzip it into your `mu-plugins` directory and rename the directory to `simply-framework`.
-- Run `composer install` in the `simply-framework` directory: the framework loads its own `vendor/` when it exists.
+- Run `composer install --no-dev` in the `simply-framework` directory: the framework loads its own `vendor/` when it exists.
 - Create a PHP file at the root of the `mu-plugins` directory to load it:
 
 ```php title='wp-content/mu-plugins/load.php'
@@ -70,6 +70,8 @@ mu-plugins
 ├── simply-framework/
 └── load.php
 ```
+
+There is no project `composer.json` in this setup: give each plugin or theme its own Composer autoloader (a `composer.json` with an `autoload.psr-4` entry for `src/`, then `composer dump-autoload`), and require its `vendor/autoload.php` before calling `Simply::registerPlugin()`.
 
 ## Next
 [Configure WordPress](configuration.md), then [create your first plugin](create-plugin.md).

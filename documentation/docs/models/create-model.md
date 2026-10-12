@@ -87,12 +87,36 @@ class ProjectTagRepository extends TermRepository
 ## Replace a model provided by Simply
 Declare your own model for `post`, `category` or `post_tag`: it replaces the one provided by Simply.
 
-```php
+```php title='src/Model/Article.php'
+<?php
+
+namespace MyPlugin\Model;
+
+use MyPlugin\Repository\ArticleRepository;
+use Simply\Core\Attributes\PostTypeModel;
+use Simply\Core\Model\PostTypeObject;
+
 #[PostTypeModel(type: 'post', repositoryClass: ArticleRepository::class)]
 class Article extends PostTypeObject
 {
 }
 ```
+
+```php title='src/Repository/ArticleRepository.php'
+<?php
+
+namespace MyPlugin\Repository;
+
+use Simply\Core\Repository\PostRepository;
+
+class ArticleRepository extends PostRepository
+{
+}
+```
+
+:::caution
+The repository provided by Simply for that type (`PostRepository`, `CategoryRepository` or `TagRepository`) is then no longer configured, and fails if you use it: use your own repository.
+:::
 
 ## Users
 `UserObject` decorates `WP_User`, with the user in `$user`. The `#[UserModel]` attribute exists, but `ModelFactory` always returns a `UserObject`: a custom user model is only used through its repository.

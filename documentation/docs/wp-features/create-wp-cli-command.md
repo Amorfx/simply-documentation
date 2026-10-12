@@ -48,8 +48,12 @@ The `wp.command` tag is required: add it in a YAML file of a `config/` directory
 ```yaml title='config/command/importprojects.yaml'
 services:
   MyPlugin\Command\ImportProjects:
+    autowire: true
     tags: ['wp.command']
 ```
+:::caution
+Keep `autowire: true`: this definition replaces the one Simply creates for the class of `src/`, and without it the dependencies of the constructor are not injected. A command that cannot be built breaks every `wp` command.
+:::
 Commands are registered on the `cli_init` action. Then:
 ```bash
 wp myplugin:import --file=projects.csv
@@ -59,4 +63,4 @@ wp myplugin:import --file=projects.csv
 ```bash
 php bin/console simply:make:wpclicommand
 ```
-Answer the questions: the command creates the class in `src/Command/` and the YAML file in `config/command/`.
+Answer the questions: the command creates the class in `src/Command/` and the YAML file in `config/command/`. Add `autowire: true` to the generated YAML file if the command has constructor dependencies.

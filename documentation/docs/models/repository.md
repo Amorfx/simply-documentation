@@ -41,8 +41,8 @@ Never use a repository provided by Simply (`PostRepository::class`...) as the `r
 | Method | Returns |
 |---|---|
 | `find(mixed $id)` | the model, or `null` when nothing is found or when the object has another type |
-| `findAll()` | every object of the type |
-| `findBy(array $criteria, array\|string\|null $orderBy = null, ?int $limit = null, ?int $offset = null)` | the matching models. `$criteria` takes the arguments of `WP_Query` (posts), `get_terms` (terms) or `get_users` (users). |
+| `findAll()` | every object of the type: published posts (and the private ones the current user can read), every term including empty ones |
+| `findBy(array $criteria, array\|string\|null $orderBy = null, ?int $limit = null, ?int $offset = null)` | the matching models. `$criteria` takes the arguments of `WP_Query` (posts), `get_terms` (terms) or `get_users` (users), with their defaults: without `$limit`, posts are limited to the "posts per page" setting (10 by default), and empty terms are excluded. |
 | `findOneBy(array $criteria)` | the first matching model, or `null` |
 
 `$orderBy` accepts:
@@ -71,4 +71,4 @@ class ProjectList
     }
 }
 ```
-The repositories provided by Simply are public: `Simply::get(\Simply\Core\Repository\CategoryRepository::class)`.
+The repositories provided by Simply are public: `Simply::get(\Simply\Core\Repository\CategoryRepository::class)`, unless you [replaced the model of their type](create-model.md#replace-a-model-provided-by-simply).

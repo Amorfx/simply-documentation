@@ -57,7 +57,7 @@ class Excerpt
     }
 
     #[Filter('the_title', 10, 2)]
-    public function title(string $title, int $postId): string
+    public function title(string $title, int $postId = 0): string
     {
         return $title;
     }
@@ -67,7 +67,7 @@ class Excerpt
 </TabItem>
 </Tabs>
 
-Both attributes take `(string $hook, int $priority = 10, int $numberArguments = 1)`, and can be repeated on the same method.
+Both attributes take `(string $hook, int $priority = 10, int $numberArguments = 1)`, and can be repeated on the same method. Give optional parameters a default value: other code may apply the same hook with fewer arguments.
 
 - **The service is created when WordPress runs the hook**, not on every request: inject what you need in the constructor without worrying about performance.
 - The method must be **public**, and must not take a parameter **by reference**: otherwise the container build fails with an explicit message. For a hook that passes values by reference (`do_action_ref_array`), use [`HookableInterface`](#with-hookableinterface).
@@ -173,4 +173,4 @@ Do not add the `wp.hook` tag to a class that only uses attributes: the framework
 ```bash
 php bin/console simply:make:hook
 ```
-creates a `HookableInterface` class in `src/Hook/` and its YAML file.
+creates a `HookableInterface` class in `src/Hook/` and a YAML file declaring it with the `wp.hook` tag. The tag is already added by autoconfiguration, and this definition replaces the one Simply creates for the class: if the class has constructor dependencies, add `autowire: true` to it, or delete the YAML file.

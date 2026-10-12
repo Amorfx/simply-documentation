@@ -39,7 +39,7 @@ post_type:
     label: trans(Projects, mydomain)
 ```
 :::caution
-`trans()` only works on the keys directly under the post type (like `label` or `description`), not inside `labels`. The translation happens when the container is compiled: it is cached in the language active at that moment. For multilingual sites, register the labels in PHP.
+`trans()` only works on the keys directly under the post type (like `label` or `description`), not inside `labels`, and spaces are removed from its text (`trans(My projects, mydomain)` becomes `__('Myprojects', 'mydomain')`). The translation happens when the container is compiled: it is cached in the language active at that moment. For multilingual sites, register the labels in PHP.
 :::
 
 ## With the CLI

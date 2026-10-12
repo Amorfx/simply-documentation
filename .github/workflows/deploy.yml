@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -28,10 +28,30 @@ jobs:
 
       - run: yarn build
 
-      # Same gh-pages branch as the former manual `docusaurus deploy`: the Pages settings do not change
-      - name: Publish to gh-pages
+      - uses: actions/upload-artifact@v7
         if: github.event_name == 'push'
+        with:
+          name: site
+          path: documentation/build
+
+  # Same gh-pages branch as the former manual `docusaurus deploy`: the Pages settings do not change
+  deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: build
+
+      - name: Publish to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: documentation/build
+          publish_dir: build
